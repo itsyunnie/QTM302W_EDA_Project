@@ -1,0 +1,198 @@
+# Analyzing the Distribution of Mental Health Professionals and Facilities
+
+## Introduction
+
+This project aims to analyze the distribution of mental health professionals and facilities across 12 states in the US. The dataset includes various demographics and employment information for psychologists, clinical psychologists, school psychologists, and mental health social workers. The source of the data is [provide the source], and it spans the year 2021 for population data and 2022 for employment data.
+
+### Ethical Considerations
+
+-   **Privacy**: The dataset does not contain personally identifiable information.
+-   **Bias**: Any biases inherent in the data collection process should be considered, especially in demographic representation.
+
+### Purpose
+
+The primary purpose of this exploratory analysis is to understand the distribution and employment trends of mental health professionals, which can help inform policy decisions and resource allocation.
+
+## Reading the Data
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(readr)
+```
+
+### Selecting columns
+
+Select all the columns that are related to this project topic from the raw dataset for further analysis.
+
+```{r}
+# Load the raw dataset
+raw_data <- read_csv("data/ahrfsn2023.csv")
+
+# Select relevant columns for analysis
+data <- raw_data %>%
+  select(st_abbrev,
+         psychol_21,
+         psychol_mal_21,
+         psychol_fem_21,
+         psychol_lt30_21,
+         psychol_30_39_21,
+         psychol_40_49_21,
+         psychol_50_59_21,
+         psychol_ge60_21,
+         psychol_resrch_dev_svc_21,
+         psychol_sch_21,
+         psychol_ofcs_oth_hlth_practnr_21,
+         psychol_outpt_care_ctr_21,
+         psychol_hosp_21,
+         psychol_indv_famly_svc_21,
+         clinpsych_emplymt_22,
+         clinpsych_medn_wage_22,
+         sch_psychol_emplymt_22,
+         sch_psychol_medn_wage_22,
+         mentl_hlth_socwk_emplymt_22,
+         mentl_hlth_socwk_medn_wage_22,
+         popn_pums_21,
+         popn_mal_21,
+         popn_fem_21,
+         popn_lt30_21,
+         popn_30_39_21,
+         popn_40_49_21,
+         popn_50_59_21,
+         popn_ge60_21)
+# Export the selected columns to a new CSV file
+write_csv(data, "data/data.csv")
+
+# Print a message to indicate successful export
+print("The new CSV file with selected columns has been exported successfully.")
+```
+
+```{r}
+# Subsetting relevant columns and renaming for clarity
+data <- data %>%
+  select(st_abbrev,
+         psychol_21,
+         psychol_mal_21,
+         psychol_fem_21,
+         psychol_lt30_21,
+         psychol_30_39_21,
+         psychol_40_49_21,
+         psychol_50_59_21,
+         psychol_ge60_21,
+         psychol_resrch_dev_svc_21,
+         psychol_sch_21,
+         psychol_ofcs_oth_hlth_practnr_21,
+         psychol_outpt_care_ctr_21,
+         psychol_hosp_21,
+         psychol_indv_famly_svc_21,
+         clinpsych_emplymt_22,
+         clinpsych_medn_wage_22,
+         sch_psychol_emplymt_22,
+         sch_psychol_medn_wage_22,
+         mentl_hlth_socwk_emplymt_22,
+         mentl_hlth_socwk_medn_wage_22,
+         popn_pums_21,
+         popn_mal_21,
+         popn_fem_21,
+         popn_lt30_21,
+         popn_30_39_21,
+         popn_40_49_21,
+         popn_50_59_21,
+         popn_ge60_21) %>%
+  rename(
+    state = st_abbrev,
+    total_psychologists = psychol_21,
+    male_psychologists = psychol_mal_21,
+    female_psychologists = psychol_fem_21,
+    psychologists_under_30 = psychol_lt30_21,
+    psychologists_30_39 = psychol_30_39_21,
+    psychologists_40_49 = psychol_40_49_21,
+    psychologists_50_59 = psychol_50_59_21,
+    psychologists_over_60 = psychol_ge60_21,
+    psychologists_research = psychol_resrch_dev_svc_21,
+    school_psychologists = psychol_sch_21,
+    psychologists_other_offices = psychol_ofcs_oth_hlth_practnr_21,
+    psychologists_outpatient = psychol_outpt_care_ctr_21,
+    psychologists_hospitals = psychol_hosp_21,
+    psychologists_family_services = psychol_indv_famly_svc_21,
+    clinical_psychologists_employment = clinpsych_emplymt_22,
+    clinical_psychologists_median_wage = clinpsych_medn_wage_22,
+    school_psychologists_employment = sch_psychol_emplymt_22,
+    school_psychologists_median_wage = sch_psychol_medn_wage_22,
+    mental_health_social_workers_employment = mentl_hlth_socwk_emplymt_22,
+    mental_health_social_workers_median_wage = mentl_hlth_socwk_medn_wage_22,
+    total_population = popn_pums_21,
+    male_population = popn_mal_21,
+    female_population = popn_fem_21,
+    population_under_30 = popn_lt30_21,
+    population_30_39 = popn_30_39_21,
+    population_40_49 = popn_40_49_21,
+    population_50_59 = popn_50_59_21,
+    population_over_60 = popn_ge60_21
+  )
+
+```
+
+### Cleaning the data
+
+```{r}
+# View the structure of the dataset
+str(data)
+
+# Check for missing values
+summary(data)
+
+
+
+# View cleaned data
+head(data)
+```
+
+### Plotting the distribution
+
+```{r}
+# Plotting the distribution of psychologists by age group
+ggplot(data, aes(x = state)) +
+  geom_bar(aes(y = psychologists_under_30), stat = "identity", fill = "blue") +
+  geom_bar(aes(y = psychologists_30_39), stat = "identity", fill = "red") +
+  geom_bar(aes(y = psychologists_40_49), stat = "identity", fill = "green") +
+  geom_bar(aes(y = psychologists_50_59), stat = "identity", fill = "purple") +
+  geom_bar(aes(y = psychologists_over_60), stat = "identity", fill = "orange") +
+  labs(title = "Distribution of Psychologists by Age Group in Each State",
+       x = "State",
+       y = "Number of Psychologists")
+
+# Plotting gender distribution
+ggplot(data, aes(x = state)) +
+  geom_bar(aes(y = male_psychologists), stat = "identity", fill = "blue") +
+  geom_bar(aes(y = female_psychologists), stat = "identity", fill = "pink") +
+  labs(title = "Gender Distribution of Psychologists in Each State",
+       x = "State",
+       y = "Number of Psychologists")
+```
+
+### Calculating Basic Statistical Metrics
+
+```{r}
+# Central tendency measures
+
+
+```
+
+### Correlational Analysis
+
+```{r}
+# Correlation matrix
+
+
+```
+
+## Future Questions and Analysis
+
+-   How do the distributions of mental health professionals correlate with mental health outcomes in each state?
+-   Are there significant differences in median wages between different types of mental health professionals?
+-   How does the availability of mental health professionals in various sectors (e.g., schools, hospitals) impact access to mental health services?
+-   What trends can be observed over time if more historical data is available?
+-   How do demographic factors influence the distribution and employment of mental health professionals?
